@@ -18,7 +18,7 @@ public class GamePanel extends JPanel {
     // sprites and animations
     private BufferedImage image, subImage;
     private BufferedImage[][] animations;
-    private int aniTick, aniIndex, aniSpeed = 10;
+    private int aniTick, aniIndex, aniSpeed = 20;
 
     // player items
     private Constants.PlayerAction playerAction = Constants.PlayerAction.IDLE;
@@ -55,14 +55,18 @@ public class GamePanel extends JPanel {
         this.playerMoving = moving;
     }
 
+    public void updateGame() {
+        updateAnimationTick();
+        setAnimation();
+        updatePlayerPos();
+    }
+
     // magic-function: gets called internally by Java Swing
     // Graphics g: The thing that actually handles drawing; the "Paint brush"
     public void paintComponent(Graphics g){
         super.paintComponent(g); // stages the Panel to paint next frame
         // custom area ready to paint...
-        updateAnimationTick();
-        setAnimation();
-        updatePlayerPos();
+
         g.drawImage(animations[playerAction.getAtlasIndex()][aniIndex],(int)xDelta, (int)yDelta, 128, 80, null);
     }
 
@@ -73,16 +77,16 @@ public class GamePanel extends JPanel {
 
         switch(playerDirection) {
             case Constants.PlayerDirection.LEFT:
-                xDelta -= 5;
+                xDelta -= 3;
                 break;
             case Constants.PlayerDirection.UP:
-                yDelta -= 5;
+                yDelta -= 3;
                 break;
             case Constants.PlayerDirection.RIGHT:
-                xDelta += 5;
+                xDelta += 3;
                 break;
             case Constants.PlayerDirection.DOWN:
-                yDelta += 5;
+                yDelta += 3;
                 break;
         }
     }
