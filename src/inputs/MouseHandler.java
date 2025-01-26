@@ -12,37 +12,26 @@ public class MouseHandler implements MouseListener, MouseMotionListener {
         this.gamePanel = gamePanel;
     }
     @Override
-    public void mouseClicked(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseDragged(MouseEvent e) {
-
-    }
-
-    @Override
     public void mouseMoved(MouseEvent e) {
-        gamePanel.setRectPos(e.getX(), e.getY());
+//        gamePanel.setRectPos(e.getX(), e.getY());
     }
+
+    // intentional empty stubs
+    @Override
+    public void mouseClicked(MouseEvent e) {}
+
+    @Override
+    public void mousePressed(MouseEvent e) {}
+
+    @Override
+    public void mouseReleased(MouseEvent e) {}
+
+    @Override
+    public void mouseEntered(MouseEvent e) {}
+
+    @Override
+    public void mouseExited(MouseEvent e) {}
+
+    @Override
+    public void mouseDragged(MouseEvent e) {}
 }
