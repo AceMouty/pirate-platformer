@@ -1,5 +1,6 @@
 package inputs;
 
+import entities.Player;
 import main.GamePanel;
 import utils.Constants;
 
@@ -18,18 +19,19 @@ public class KeyHandler implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
+        Player player = gamePanel.getGame().getPlayer();
         switch (e.getKeyCode()){
             case KeyEvent.VK_W:
-                gamePanel.setPlayerDirection(Constants.PlayerDirection.UP);
+                player.setPlayerDirection(Constants.PlayerDirection.UP);
                 break;
             case KeyEvent.VK_A:
-                gamePanel.setPlayerDirection(Constants.PlayerDirection.LEFT);
+                player.setPlayerDirection(Constants.PlayerDirection.LEFT);
                 break;
             case KeyEvent.VK_S:
-                gamePanel.setPlayerDirection(Constants.PlayerDirection.DOWN);
+                player.setPlayerDirection(Constants.PlayerDirection.DOWN);
                 break;
             case KeyEvent.VK_D:
-                gamePanel.setPlayerDirection(Constants.PlayerDirection.RIGHT);
+                player.setPlayerDirection(Constants.PlayerDirection.RIGHT);
                 break;
         }
     }
@@ -41,7 +43,10 @@ public class KeyHandler implements KeyListener {
             case KeyEvent.VK_A:
             case KeyEvent.VK_S:
             case KeyEvent.VK_D:
-                gamePanel.setPlayerMoving(false);
+                gamePanel
+                  .getGame()
+                  .getPlayer()
+                  .setPlayerMoving(false);
                 break;
         }
     }
