@@ -2,6 +2,7 @@ package main;
 
 import inputs.KeyHandler;
 import inputs.MouseHandler;
+import utils.Constants;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
@@ -13,12 +14,22 @@ import java.io.InputStream;
 public class GamePanel extends JPanel {
     private final MouseHandler mouseHandler;
     private float xDelta = 100, yDelta = 100;
+
+    // sprites and animations
     private BufferedImage image, subImage;
+    private BufferedImage[][] animations;
+    private int aniTick, aniIndex, aniSpeed = 10;
+
+    // player items
+    private Constants.PlayerAction playerAction = Constants.PlayerAction.IDLE;
+    private Constants.PlayerDirection playerDirection = Constants.PlayerDirection.RIGHT;
+    private boolean playerMoving = false;
 
     public GamePanel() {
         mouseHandler = new MouseHandler(this);
 
         importImage();
+        loadAnimationFrames();
 
         setPanelSize();
         addKeyListener(new KeyHandler(this));
@@ -27,12 +38,21 @@ public class GamePanel extends JPanel {
 
     }
 
-    public void updateXDelta(int value) {
-        this.xDelta += value;
+//    public void updateXDelta(int value) {
+//        this.xDelta += value;
+//    }
+//
+//    public void updateYDelta(int value){
+//        this.yDelta += value;
+//    }
+
+    public void setPlayerDirection(Constants.PlayerDirection direction) {
+        this.playerDirection = direction;
+        setPlayerMoving(true);
     }
 
-    public void updateYDelta(int value){
-        this.yDelta += value;
+    public void setPlayerMoving(boolean moving){
+        this.playerMoving = moving;
     }
 
     // magic-function: gets called internally by Java Swing
@@ -40,10 +60,39 @@ public class GamePanel extends JPanel {
     public void paintComponent(Graphics g){
         super.paintComponent(g); // stages the Panel to paint next frame
         // custom area ready to paint...
+        updateAnimationTick();
+        setAnimation();
+        updatePlayerPos();
+        g.drawImage(animations[playerAction.getAtlasIndex()][aniIndex],(int)xDelta, (int)yDelta, 128, 80, null);
+    }
 
-        // grab a sub section of the png file, this is why we used BufferedImage
-        subImage = image.getSubimage(1*64,8*40, 64, 40);
-        g.drawImage(subImage,(int)xDelta, (int)yDelta, 128, 80, null);
+    private void updatePlayerPos() {
+        if(!playerMoving) {
+            return;
+        }
+
+        switch(playerDirection) {
+            case Constants.PlayerDirection.LEFT:
+                xDelta -= 5;
+                break;
+            case Constants.PlayerDirection.UP:
+                yDelta -= 5;
+                break;
+            case Constants.PlayerDirection.RIGHT:
+                xDelta += 5;
+                break;
+            case Constants.PlayerDirection.DOWN:
+                yDelta += 5;
+                break;
+        }
+    }
+
+    private void setAnimation() {
+        if(playerMoving) {
+            playerAction = Constants.PlayerAction.RUNNING;
+        } else {
+            playerAction = Constants.PlayerAction.IDLE;
+        }
     }
 
     private void setPanelSize(){
@@ -54,11 +103,32 @@ public class GamePanel extends JPanel {
     }
 
     private void importImage() {
-        InputStream is = getClass().getResourceAsStream("/player_sprites.png");
-        try{
+        // try-with-resources will auto call is.close() for us
+        try (InputStream is = getClass().getResourceAsStream("/player_sprites.png"))
+        {
             image = ImageIO.read(is);
         } catch (IOException e){
             e.printStackTrace();
+        }
+    }
+
+    private void loadAnimationFrames() {
+        animations = new BufferedImage[9][6];
+
+        for (int row = 0; row < animations.length; row++){
+            for(int col = 0; col < animations[row].length; col++){
+                animations[row][col] = image.getSubimage(col*64, row*40, 64, 40);
+            }
+        }
+
+    }
+
+    private void updateAnimationTick(){
+        aniTick++;
+        if(aniTick >= aniSpeed){
+            aniTick = 0;
+            aniIndex++;
+            if(aniIndex >= playerAction.getTotalFrames()) aniIndex = 0;
         }
     }
 }

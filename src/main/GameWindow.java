@@ -7,7 +7,7 @@ public class GameWindow extends JFrame {
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         add(gamePanel);
-        setLocationRelativeTo(null); // open center screen
+        //setLocationRelativeTo(null); // open center screen
         setResizable(false);
         pack(); // use the preferred size defined in the panel
         // this needs to be the last thing when setting up the frame
