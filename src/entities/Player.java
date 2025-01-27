@@ -1,7 +1,9 @@
 package entities;
 
+import levels.Level;
 import main.Game;
 import utils.Constants;
+import utils.HelperMethods;
 import utils.LoadSave;
 
 import java.awt.*;
@@ -19,9 +21,17 @@ public class Player extends AbstractEntity {
     private boolean up, right, down, left;
     private float playerSpeed = 2.0f;
 
+    // Level information
+    private Level level;
+
+    // hitbox offsets (make hitbox close to player body)
+    private float xDrawOffset = 21 * Game.SCALE;
+    private float yDrawOffset = 4 * Game.SCALE;
+
     public Player(float x, float y, int width, int height){
         super(x, y, width, height);
         loadAnimationFrames();
+        initHitbox(x, y, 20 * Game.SCALE, 28 * Game.SCALE);
     }
 
     public boolean isLeft() {
@@ -56,6 +66,10 @@ public class Player extends AbstractEntity {
         this.up = up;
     }
 
+    public void setLevel(Level level) {
+        this.level = level;
+    }
+
     public void setPlayerAttacking(boolean playerAttacking) {
         this.playerAttacking = playerAttacking;
     }
@@ -67,7 +81,10 @@ public class Player extends AbstractEntity {
     }
 
     public void render(Graphics g) {
-        g.drawImage(animations[playerAction.getAtlasIndex()][aniIndex],(int)x, (int)y, width, height, null);
+        g.drawImage(animations[playerAction.getAtlasIndex()][aniIndex],
+          (int)(hitbox.x - xDrawOffset), (int)(hitbox.y - yDrawOffset), width, height, null);
+
+        drawHitbox(g);
     }
 
     public void resetDirectionBooleans() {
@@ -87,21 +104,35 @@ public class Player extends AbstractEntity {
 //    }
     private void updatePlayerPos() {
         playerMoving = false;
+        float xSpeed = 0, ySpeed = 0;
+
+        // if not pressing any button, exit, nothing to do
+        if(!left && !right && !up && !down){
+            return;
+        }
+
         if(left && !right) {
-            x -= playerSpeed;
-            playerMoving = true;
+            xSpeed = -playerSpeed;
         } else if(right && !left) {
-            x += playerSpeed;
-            playerMoving = true;
+            xSpeed = playerSpeed;
         }
 
         if(up && !down) {
-            y -= playerSpeed;
-            playerMoving = true;
+            ySpeed = -playerSpeed;
         } else if (down && !up) {
-            y += playerSpeed;
-            playerMoving = true;
+            ySpeed = playerSpeed;
         }
+
+//        if(!HelperMethods.IsValidMove(x+xSpeed, y+ySpeed, width, height, level.getLevelData())){
+//            return;
+//        }
+        if(!HelperMethods.IsValidMove(hitbox.x+xSpeed, hitbox.y+ySpeed, hitbox.width, hitbox.height, level.getLevelData())){
+            return;
+        }
+
+        hitbox.x += xSpeed;
+        hitbox.y += ySpeed;
+        playerMoving = true;
     }
 
     private void setAnimation() {

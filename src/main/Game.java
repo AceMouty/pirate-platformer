@@ -19,18 +19,20 @@ public class Game implements Runnable {
     private final GamePanel gamePanel;
 
     private Thread gameThread;
-    private final int FPS_SET = 80; // fps -> rendering / frames
+    private final int FPS_SET = 180; // fps -> rendering / frames
     private final int UPS_SET = 200; // ups -> updates / ticks
 
     // Game classes
-    private final Player player = new Player(100,100, (int)(64 * Game.SCALE), (int)(40 * Game.SCALE));
+    private final Player player = new Player(100,200, (int)(64 * Game.SCALE), (int)(40 * Game.SCALE));
     private final LevelManager levelManager = new LevelManager(this);
 
 
     public Game() {
         gamePanel = new GamePanel(this);
         gameWindow = new GameWindow(gamePanel);
+
         gamePanel.requestFocusInWindow();
+        player.setLevel(levelManager.getCurrentLevel());
 
         startGameLoop();
     }
@@ -63,7 +65,7 @@ public class Game implements Runnable {
             // deltaUpdate will be 1.0 or more when the duration since the last update
             // is equal or more than timePerUpdate
             deltaUpdate += (currentTime - previousTime) / timePerUpdate;
-            deltaFrames += (currentTime - previousTime) / timePerUpdate;
+            deltaFrames += (currentTime - previousTime) / timePerFrame;
             previousTime = currentTime;
 
             if(deltaUpdate >= 1) {

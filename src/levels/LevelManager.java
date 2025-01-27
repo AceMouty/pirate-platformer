@@ -17,6 +17,10 @@ public class LevelManager {
         level = new Level(LoadSave.GetLevelData());
     }
 
+    public Level getCurrentLevel() {
+        return level;
+    }
+
     public void draw(Graphics g){
         for(int y = 0; y < Game.TILES_IN_HEIGHT; y++) {
             for (int x = 0; x < Game.TILES_IN_WIDTH; x++) {
