@@ -1,6 +1,7 @@
 package main;
 
 import entities.Player;
+import levels.LevelManager;
 
 import java.awt.*;
 
@@ -16,13 +17,14 @@ public class Game implements Runnable {
 
     private final GameWindow gameWindow;
     private final GamePanel gamePanel;
+
     private Thread gameThread;
     private final int FPS_SET = 80; // fps -> rendering / frames
     private final int UPS_SET = 200; // ups -> updates / ticks
 
-    // Game characters
-    private final Player player = new Player(100,100);
-
+    // Game classes
+    private final Player player = new Player(100,100, (int)(64 * Game.SCALE), (int)(40 * Game.SCALE));
+    private final LevelManager levelManager = new LevelManager(this);
 
 
     public Game() {
@@ -99,9 +101,12 @@ public class Game implements Runnable {
 
     public void update() {
         player.update();
+        levelManager.update();
     }
 
     public void render(Graphics g) {
+        // render level behind the player
+        levelManager.draw(g);
         player.render(g);
     }
 //    might need this later...
