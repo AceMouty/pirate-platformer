@@ -16,57 +16,111 @@ public class Player extends AbstractEntity {
     // controlling player
     private Constants.PlayerAction playerAction = Constants.PlayerAction.IDLE;
     private Constants.PlayerDirection playerDirection = Constants.PlayerDirection.RIGHT;
-    private boolean playerMoving = false;
+    private boolean playerMoving = false, playerAttacking = false;
+    private boolean up, right, down, left;
+    private float playerSpeed = 2.0f;
 
     public Player(float x, float y){
         super(x, y);
         loadAnimationFrames();
     }
 
+    public boolean isLeft() {
+        return left;
+    }
+
+    public void setLeft(boolean left) {
+        this.left = left;
+    }
+
+    public boolean isDown() {
+        return down;
+    }
+
+    public void setDown(boolean down) {
+        this.down = down;
+    }
+
+    public boolean isRight() {
+        return right;
+    }
+
+    public void setRight(boolean right) {
+        this.right = right;
+    }
+
+    public boolean isUp() {
+        return up;
+    }
+
+    public void setUp(boolean up) {
+        this.up = up;
+    }
+
+    public void setPlayerAttacking(boolean playerAttacking) {
+        this.playerAttacking = playerAttacking;
+    }
+
     public void update() {
+        updatePlayerPos();
         updateAnimationTick();
         setAnimation();
-        updatePlayerPos();
     }
 
     public void render(Graphics g) {
         g.drawImage(animations[playerAction.getAtlasIndex()][aniIndex],(int)x, (int)y, 128, 80, null);
     }
 
-    public void setPlayerDirection(Constants.PlayerDirection direction) {
-        this.playerDirection = direction;
-        setPlayerMoving(true);
+    public void resetDirectionBooleans() {
+        left = false;
+        right = false;
+        up = false;
+        down = false;
     }
 
-    public void setPlayerMoving(boolean moving){
-        this.playerMoving = moving;
-    }
+//    public void setPlayerDirection(Constants.PlayerDirection direction) {
+//        this.playerDirection = direction;
+//        setPlayerMoving(true);
+//    }
+
+//    public void setPlayerMoving(boolean moving){
+//        this.playerMoving = moving;
+//    }
     private void updatePlayerPos() {
-        if(!playerMoving) {
-            return;
+        playerMoving = false;
+        if(left && !right) {
+            x -= playerSpeed;
+            playerMoving = true;
+        } else if(right && !left) {
+            x += playerSpeed;
+            playerMoving = true;
         }
 
-        switch(playerDirection) {
-            case Constants.PlayerDirection.LEFT:
-                x -= 1;
-                break;
-            case Constants.PlayerDirection.UP:
-                y -= 1;
-                break;
-            case Constants.PlayerDirection.RIGHT:
-                x += 1;
-                break;
-            case Constants.PlayerDirection.DOWN:
-                y += 1;
-                break;
+        if(up && !down) {
+            y -= playerSpeed;
+            playerMoving = true;
+        } else if (down && !up) {
+            y += playerSpeed;
+            playerMoving = true;
         }
     }
 
     private void setAnimation() {
+        int startAni = playerAction.getAtlasIndex();
+
         if(playerMoving) {
             playerAction = Constants.PlayerAction.RUNNING;
         } else {
             playerAction = Constants.PlayerAction.IDLE;
+        }
+
+        if(playerAttacking){
+            playerAction = Constants.PlayerAction.ATTACK_1;
+        }
+
+        // did we change our animation?
+        if(startAni != playerAction.getAtlasIndex()) {
+            resetAnimationTick();
         }
     }
 
@@ -75,9 +129,18 @@ public class Player extends AbstractEntity {
         if(aniTick >= aniSpeed){
             aniTick = 0;
             aniIndex++;
-            if(aniIndex >= playerAction.getTotalFrames()) aniIndex = 0;
+            if(aniIndex >= playerAction.getTotalFrames()) {
+                aniIndex = 0;
+                setPlayerAttacking(false);
+            }
         }
     }
+
+    private void resetAnimationTick() {
+        aniTick = 0;
+        aniIndex = 0;
+    }
+
     private void loadAnimationFrames() {
         animations = new BufferedImage[9][6];
         BufferedImage spriteAtlas = importImage();

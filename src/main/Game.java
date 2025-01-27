@@ -27,6 +27,10 @@ public class Game implements Runnable {
         return player;
     }
 
+    public void windowFocusLost() {
+        player.resetDirectionBooleans();
+    }
+
     // Game thread
     @Override
     public void run() {

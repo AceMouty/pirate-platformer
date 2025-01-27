@@ -12,13 +12,15 @@ public class MouseHandler implements MouseListener, MouseMotionListener {
         this.gamePanel = gamePanel;
     }
     @Override
-    public void mouseMoved(MouseEvent e) {
-//        gamePanel.setRectPos(e.getX(), e.getY());
-    }
+    public void mouseMoved(MouseEvent e) {}
 
     // intentional empty stubs
     @Override
-    public void mouseClicked(MouseEvent e) {}
+    public void mouseClicked(MouseEvent e) {
+        if(e.getButton() == MouseEvent.BUTTON1){
+            gamePanel.getGame().getPlayer().setPlayerAttacking(true);
+        }
+    }
 
     @Override
     public void mousePressed(MouseEvent e) {}
