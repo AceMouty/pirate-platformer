@@ -10,9 +10,13 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class Player extends AbstractEntity {
+    /*
+        NOTE: There is a debug hitbox you can toggle in the player *render* method
+     */
+
     // player animations
     private BufferedImage[][] animations;
-    private int aniTick, aniIndex, aniSpeed = 20;
+    private int aniTick, aniIndex, aniSpeed = 30;
 
     // controlling player
     private Constants.PlayerAction playerAction = Constants.PlayerAction.IDLE;
@@ -38,7 +42,7 @@ public class Player extends AbstractEntity {
     public Player(float x, float y, int width, int height){
         super(x, y, width, height);
         loadAnimationFrames();
-        initHitbox(x, y, 20 * Game.SCALE, 28 * Game.SCALE);
+        initHitbox(x, y, 20 * Game.SCALE, 27 * Game.SCALE);
     }
 
     public boolean isLeft() {
@@ -75,6 +79,9 @@ public class Player extends AbstractEntity {
 
     public void setLevel(Level level) {
         this.level = level;
+        if(!HelperMethods.IsEntityOnFloor(hitbox, level.getLevelData())) {
+            inAir = true;
+        }
     }
 
     public void setPlayerAttacking(boolean playerAttacking) {
@@ -91,7 +98,7 @@ public class Player extends AbstractEntity {
         g.drawImage(animations[playerAction.getAtlasIndex()][aniIndex],
           (int)(hitbox.x - xDrawOffset), (int)(hitbox.y - yDrawOffset), width, height, null);
 
-        drawHitbox(g);
+        //drawHitbox(g);
     }
 
     public void resetDirectionBooleans() {
@@ -105,14 +112,6 @@ public class Player extends AbstractEntity {
         this.jump = jump;
     }
 
-//    public void setPlayerDirection(Constants.PlayerDirection direction) {
-//        this.playerDirection = direction;
-//        setPlayerMoving(true);
-//    }
-
-//    public void setPlayerMoving(boolean moving){
-//        this.playerMoving = moving;
-//    }
     private void updatePlayerPos() {
         playerMoving = false;
         float xSpeed = 0;
@@ -128,6 +127,13 @@ public class Player extends AbstractEntity {
         // check if moving left or right
         if(left) xSpeed -= playerSpeed;
         if(right) xSpeed += playerSpeed;
+
+        // Check if we have run off a ledge
+        if(!inAir) {
+            if(!HelperMethods.IsEntityOnFloor(hitbox, level.getLevelData())){
+                inAir = true;
+            }
+        }
 
         // Apply changes based on if we are in the air or not
         if(inAir) {
@@ -181,6 +187,14 @@ public class Player extends AbstractEntity {
             playerAction = Constants.PlayerAction.RUNNING;
         } else {
             playerAction = Constants.PlayerAction.IDLE;
+        }
+
+        if(inAir) {
+            if(airSpeed < 0) { // less than zero, means we are going up (visually)
+                playerAction = Constants.PlayerAction.JUMP;
+            } else {
+                playerAction = Constants.PlayerAction.FALLING;
+            }
         }
 
         if(playerAttacking){

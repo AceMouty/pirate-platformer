@@ -19,7 +19,7 @@ public class Game implements Runnable {
     private final GamePanel gamePanel;
 
     private Thread gameThread;
-    private final int FPS_SET = 180; // fps -> rendering / frames
+    private final int FPS_SET = 120; // fps -> rendering / frames
     private final int UPS_SET = 200; // ups -> updates / ticks
 
     // Game classes

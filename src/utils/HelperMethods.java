@@ -93,4 +93,24 @@ public class HelperMethods {
         // left
         return currentTile * Game.TILES_SIZE;
     }
+
+    /*
+        Check if a game character / entity is on the floor or not
+        by checking bottom left and right corners of their hitbox
+
+        (magic nubmer) 1: look under character feet for the ground.
+     */
+    public static boolean IsEntityOnFloor(Rectangle2D.Float hitbox, int[][] levelData) {
+        // check bottom left
+        if(!IsSolid(hitbox.x, hitbox.y + hitbox.height + 1, levelData)){
+            return false;
+        }
+
+        // check bottom right
+        if(!IsSolid(hitbox.x + hitbox.width, hitbox.y + hitbox.height + 1, levelData)) {
+            return false;
+        }
+
+        return true;
+    }
 }
