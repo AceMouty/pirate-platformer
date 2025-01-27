@@ -2,6 +2,8 @@ package utils;
 
 import main.Game;
 
+import java.awt.geom.Rectangle2D;
+
 public class HelperMethods {
     // TODO: replace x,y,width,height with a Rect obj
     /*
@@ -61,5 +63,34 @@ public class HelperMethods {
         }
 
         return false;
+    }
+
+    public static float GetEntityXPosNextToWall(Rectangle2D.Float hitbox, float xSpeed) {
+        // check if collision is left or right
+        int currentTile = (int)(hitbox.x / Game.TILES_SIZE);
+        // right
+        if(xSpeed > 0) {
+            int tileXPos = currentTile * Game.TILES_SIZE;
+            int xOffset = (int)(Game.TILES_SIZE - hitbox.width);
+            return tileXPos + xOffset - 1; // -1 so that our hitbox doesnt overlap the tile we are colliding with
+        }
+
+        // left
+        return currentTile * Game.TILES_SIZE;
+    }
+
+    public static float GetEntityYPosUnderRoofOrAboveFloor(Rectangle2D.Float hitbox, float airSpeed) {
+        // check if collision is left or right
+        int currentTile = (int)(hitbox.y / Game.TILES_SIZE);
+
+        // falling else jumping
+        if(airSpeed > 0) {
+            int tileYPos = currentTile * Game.TILES_SIZE;
+            int yOffset = (int)(Game.TILES_SIZE - hitbox.height);
+            return tileYPos + yOffset - 1; // -1 so that our hitbox doesnt overlap the tile we are colliding with
+        }
+
+        // left
+        return currentTile * Game.TILES_SIZE;
     }
 }

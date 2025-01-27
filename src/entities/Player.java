@@ -18,7 +18,7 @@ public class Player extends AbstractEntity {
     private Constants.PlayerAction playerAction = Constants.PlayerAction.IDLE;
     private Constants.PlayerDirection playerDirection = Constants.PlayerDirection.RIGHT;
     private boolean playerMoving = false, playerAttacking = false;
-    private boolean up, right, down, left;
+    private boolean up, right, down, left, jump;
     private float playerSpeed = 2.0f;
 
     // Level information
@@ -27,6 +27,13 @@ public class Player extends AbstractEntity {
     // hitbox offsets (make hitbox close to player body)
     private float xDrawOffset = 21 * Game.SCALE;
     private float yDrawOffset = 4 * Game.SCALE;
+
+    // jump / gravity
+    private float airSpeed = 0f;
+    private float gravity = 0.04f * Game.SCALE;
+    private float jumpSpeed = -2.25f * Game.SCALE;
+    private float fallSpeedAfterCollision = 0.5f * Game.SCALE;
+    private boolean inAir = false;
 
     public Player(float x, float y, int width, int height){
         super(x, y, width, height);
@@ -94,6 +101,10 @@ public class Player extends AbstractEntity {
         down = false;
     }
 
+    public void setJump(boolean jump) {
+        this.jump = jump;
+    }
+
 //    public void setPlayerDirection(Constants.PlayerDirection direction) {
 //        this.playerDirection = direction;
 //        setPlayerMoving(true);
@@ -104,35 +115,63 @@ public class Player extends AbstractEntity {
 //    }
     private void updatePlayerPos() {
         playerMoving = false;
-        float xSpeed = 0, ySpeed = 0;
+        float xSpeed = 0;
 
+        if(jump) {
+            jump();
+        }
         // if not pressing any button, exit, nothing to do
-        if(!left && !right && !up && !down){
+        if(!left && !right && !inAir){
             return;
         }
 
-        if(left && !right) {
-            xSpeed = -playerSpeed;
-        } else if(right && !left) {
-            xSpeed = playerSpeed;
+        // check if moving left or right
+        if(left) xSpeed -= playerSpeed;
+        if(right) xSpeed += playerSpeed;
+
+        // Apply changes based on if we are in the air or not
+        if(inAir) {
+            // if still jumping else landed...
+            if(HelperMethods.IsValidMove(hitbox.x, hitbox.y + airSpeed, hitbox.width, hitbox.height, level.getLevelData())){
+                hitbox.y += airSpeed;
+                airSpeed += gravity;
+                updateXPos(xSpeed);
+            } else {
+                hitbox.y = HelperMethods.GetEntityYPosUnderRoofOrAboveFloor(hitbox, airSpeed);
+                if(airSpeed > 0){
+                    resetInAir();
+                } else {
+                    airSpeed = fallSpeedAfterCollision;
+                }
+                updateXPos(xSpeed);
+            }
+        } else
+            updateXPos(xSpeed);
+
+        playerMoving = true;
+    }
+
+    private void jump() {
+        if(inAir) {
+            return;
         }
 
-        if(up && !down) {
-            ySpeed = -playerSpeed;
-        } else if (down && !up) {
-            ySpeed = playerSpeed;
-        }
+        inAir = true;
+        airSpeed = jumpSpeed;
+    }
 
-//        if(!HelperMethods.IsValidMove(x+xSpeed, y+ySpeed, width, height, level.getLevelData())){
-//            return;
-//        }
-        if(!HelperMethods.IsValidMove(hitbox.x+xSpeed, hitbox.y+ySpeed, hitbox.width, hitbox.height, level.getLevelData())){
+    private void resetInAir() {
+        inAir = false;
+        airSpeed = 0;
+    }
+
+    private void updateXPos(float xSpeed) {
+        if(!HelperMethods.IsValidMove(hitbox.x+xSpeed, hitbox.y, hitbox.width, hitbox.height, level.getLevelData())){
+            hitbox.x = HelperMethods.GetEntityXPosNextToWall(hitbox, xSpeed);
             return;
         }
 
         hitbox.x += xSpeed;
-        hitbox.y += ySpeed;
-        playerMoving = true;
     }
 
     private void setAnimation() {
