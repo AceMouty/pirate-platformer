@@ -5,6 +5,14 @@ import entities.Player;
 import java.awt.*;
 
 public class Game implements Runnable {
+    // Dimensions
+    public final static int TILES_DEFAULT_SIZE = 32; // we know this, because of the assest sizes
+    public final static float SCALE = 1.5f;
+    public final static int TILES_IN_WIDTH = 26;
+    public final static int TILES_IN_HEIGHT = 14;
+    public final static int TILES_SIZE = (int)(TILES_DEFAULT_SIZE * SCALE);
+    public final static int GAME_WIDTH = TILES_SIZE * TILES_IN_WIDTH;
+    public final static int GAME_HEIGHT = TILES_SIZE * TILES_IN_HEIGHT;
 
     private final GameWindow gameWindow;
     private final GamePanel gamePanel;
@@ -14,6 +22,8 @@ public class Game implements Runnable {
 
     // Game characters
     private final Player player = new Player(100,100);
+
+
 
     public Game() {
         gamePanel = new GamePanel(this);

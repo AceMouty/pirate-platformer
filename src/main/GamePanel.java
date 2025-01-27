@@ -2,14 +2,9 @@ package main;
 
 import inputs.KeyHandler;
 import inputs.MouseHandler;
-import utils.Constants;
 
-import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
 
 public class GamePanel extends JPanel {
     private final MouseHandler mouseHandler;
@@ -44,9 +39,8 @@ public class GamePanel extends JPanel {
     }
 
     private void setPanelSize(){
-        Dimension dimension = new Dimension(1280, 800);
-        setMinimumSize(dimension);
+        Dimension dimension = new Dimension(game.GAME_WIDTH, game.GAME_HEIGHT);
         setPreferredSize(dimension);
-        setMaximumSize(dimension);
+        System.out.println("Game Dimensions: WIDTH {" + game.GAME_WIDTH + "}" + " HEIGHT: {" + game.GAME_HEIGHT + "}");
     }
 }

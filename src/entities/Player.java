@@ -1,6 +1,7 @@
 package entities;
 
 import utils.Constants;
+import utils.LoadSave;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -143,7 +144,7 @@ public class Player extends AbstractEntity {
 
     private void loadAnimationFrames() {
         animations = new BufferedImage[9][6];
-        BufferedImage spriteAtlas = importImage();
+        BufferedImage spriteAtlas = LoadSave.GetSpriteAtlas(LoadSave.PLAYER_ATLAS);
         if (spriteAtlas == null) {
             System.err.println("Critical error: Player image not found");
             System.exit(1);
@@ -155,18 +156,5 @@ public class Player extends AbstractEntity {
             }
         }
 
-    }
-
-    private BufferedImage importImage() {
-        BufferedImage spriteAtlas = null;
-        // try-with-resources will auto call is.close() for us
-        try (InputStream is = getClass().getResourceAsStream("/player_sprites.png"))
-        {
-            spriteAtlas = ImageIO.read(is);
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-
-        return spriteAtlas;
     }
 }
